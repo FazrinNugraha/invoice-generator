@@ -71,22 +71,22 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
           <div className="flex justify-between items-start">
             {/* Invoice To */}
             <div>
-              <p className="text-[16px] font-bold text-gray-500 mb-1.5">Invoice to:</p>
+              <p className="text-[16px] font-bold text-[#0f172a] mb-1.5">Invoice to:</p>
               <p className="text-[20px] font-extrabold text-[#0f172a]">
                 {data.clientName || "\u00A0"}
               </p>
-              <p className="text-[16px] text-gray-500 mt-1">
+              <p className="text-[16px] font-semibold text-[#0f172a] mt-1">
                 {data.clientAddress || "\u00A0"}
               </p>
             </div>
 
             {/* From */}
             <div className="text-right">
-              <p className="text-[16px] font-bold text-gray-500 mb-1.5">From:</p>
+              <p className="text-[16px] font-bold text-[#0f172a] mb-1.5">From:</p>
               <p className="text-[20px] font-extrabold text-[#0f172a]">
                 AGUNGJAYA_ALUMINUM
               </p>
-              <p className="text-[16px] text-gray-500 mt-1">
+              <p className="text-[16px] font-semibold text-[#0f172a] mt-1">
                 Duren Sawit , Jakarta Timur
               </p>
             </div>
