@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InvoiceForm from "./components/InvoiceForm";
 import InvoiceTemplate from "./components/InvoiceTemplate";
 import type { InvoiceData } from "./components/InvoiceForm";
@@ -16,6 +16,14 @@ function App() {
     paymentDate: "",
     status: "DP",
   });
+
+  useEffect(() => {
+    if (invoiceData.clientName.trim()) {
+      document.title = `Invoice - ${invoiceData.clientName.trim()}`;
+    } else {
+      document.title = "Invoice - Agungjaya Alumunium";
+    }
+  }, [invoiceData.clientName]);
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
