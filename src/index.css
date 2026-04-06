@@ -49,11 +49,11 @@
 
   html, body {
     width: 210mm;
-    height: 297mm;
     margin: 0 !important;
     padding: 0 !important;
     background: white !important;
-    overflow: hidden;
+    overflow: visible !important;
+    height: auto !important;
   }
 
   .no-print {
@@ -67,20 +67,29 @@
     display: block !important;
     min-height: auto !important;
     overflow: visible !important;
-    width: 100% !important;
+    width: 210mm !important;
   }
 
+  /* Scale down slightly to account for mobile browser print margins/headers/footers */
   .invoice-paper {
     width: 210mm !important;
-    height: 297mm !important;
-    min-height: 297mm !important;
-    max-height: 297mm !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
     box-shadow: none !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     position: relative !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     page-break-after: avoid;
     page-break-inside: avoid;
+    transform: scale(0.95) !important;
+    transform-origin: top center !important;
+  }
+
+  /* Ensure the scale-window wrapper doesn't interfere */
+  .scale-window {
+    transform: none !important;
+    margin-bottom: 0 !important;
   }
 }
 
