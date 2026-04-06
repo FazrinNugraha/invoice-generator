@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+/* ===== Custom Theme ===== */
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --color-brand: #E8A317;
+  --color-brand-dark: #D4940F;
+  --color-navy: #1B3A5C;
+}
+
+/* ===== Base Styles ===== */
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ===== Scrollbar Styling ===== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* ===== Print Styles ===== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  html, body {
+    width: 210mm;
+    height: 297mm;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    overflow: hidden;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-area {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    width: 100% !important;
+  }
+
+  .invoice-paper {
+    width: 210mm !important;
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+/* ===== Responsive Preview untuk HP/Tablet ===== */
+/* Kertas A4 = 210mm ≈ 794px lebar, 297mm ≈ 1123px tinggi */
+
+/* HP kecil (< 480px): scale 0.45 → lebar tampil ~357px, tinggi ~505px */
+@media screen and (max-width: 479px) {
+  .scale-window {
+    transform: scale(0.45);
+    transform-origin: top center;
+    margin-bottom: -618px; /* 1123 * (1 - 0.45) = 618 */
+  }
+}
+
+/* HP besar / phablet (480px - 767px): scale 0.55 → lebar tampil ~437px */
+@media screen and (min-width: 480px) and (max-width: 767px) {
+  .scale-window {
+    transform: scale(0.55);
+    transform-origin: top center;
+    margin-bottom: -505px; /* 1123 * (1 - 0.55) = 505 */
+  }
+}
+
+/* Tablet (768px - 1024px): scale 0.85 → lebar tampil ~675px */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .scale-window {
+    transform: scale(0.85);
+    transform-origin: top center;
+    margin-bottom: -168px; /* 1123 * (1 - 0.85) = 168 */
+  }
+}
+
+/* Desktop (> 1024px): normal */
+@media screen and (min-width: 1025px) {
+  .scale-window {
+    transform: none;
+    margin-bottom: 0;
+  }
+}
