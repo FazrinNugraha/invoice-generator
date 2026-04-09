@@ -70,7 +70,7 @@
     width: 210mm !important;
   }
 
-  /* Scale down slightly to account for mobile browser print margins/headers/footers */
+  /* Allow invoice paper to grow and break across pages */
   .invoice-paper {
     width: 210mm !important;
     height: auto !important;
@@ -80,10 +80,21 @@
     margin: 0 auto !important;
     position: relative !important;
     overflow: visible !important;
-    page-break-after: avoid;
+    page-break-after: auto;
+    page-break-inside: auto;
+    break-inside: auto;
+  }
+
+  /* Keep individual rows together during page breaks */
+  .invoice-row {
     page-break-inside: avoid;
-    transform: scale(0.95) !important;
-    transform-origin: top center !important;
+    break-inside: avoid;
+  }
+
+  /* Keep payment section together */
+  .invoice-payment {
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   /* Ensure the scale-window wrapper doesn't interfere */

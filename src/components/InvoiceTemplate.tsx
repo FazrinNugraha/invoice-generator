@@ -13,7 +13,7 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
     >
       {/* A4 Paper */}
       <div
-        className="invoice-paper bg-white w-[210mm] h-[297mm] shadow-2xl relative overflow-hidden flex flex-col"
+        className="invoice-paper bg-white w-[210mm] min-h-[297mm] shadow-2xl relative flex flex-col"
         style={{ fontFamily: "'Inter', sans-serif" }}
       >
         {/* ===== TOP DECORATIVE BAR ===== */}
@@ -121,7 +121,7 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
             {data.items.map((item, index) => (
               <div
                 key={index}
-                className="flex items-start min-h-[70px]"
+                className="invoice-row flex items-start min-h-[70px]"
                 style={{ borderBottom: "1px solid #E5E7EB" }}
               >
                 <div className="flex-1 py-5 px-2">
@@ -139,7 +139,7 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
 
             {/* DP Row */}
             <div
-              className="flex items-center min-h-[60px]"
+              className="invoice-row flex items-center min-h-[60px]"
             >
               <div className="flex-1 py-5 px-2">
                 <p className="text-[16px] text-gray-800 font-semibold tracking-wide">DP</p>
@@ -177,7 +177,7 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
         </div>
 
         {/* ===== PAYMENT METHOD SECTION ===== */}
-        <div className="px-12 pb-6">
+        <div className="invoice-payment px-12 pb-6">
           <div className="flex justify-between items-end">
             {/* Left: Payment Info */}
             <div>
