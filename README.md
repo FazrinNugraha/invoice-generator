@@ -16,7 +16,7 @@ Dirancang agar mudah digunakan oleh siapa pun — tanpa perlu latar belakang tek
 
 ## 📖 Latar Belakang
 
-Proyek ini dibuat untuk menjawab kendala operasional pada **Agungjaya Alumunium**, bisnis keluarga yang bergerak di bidang instalasi aluminium dan kaca di Duren Sawit, Jakarta Timur.
+Proyek ini dibuat untuk menjawab kendala operasional pada **Agungjaya Alumunium**, bisnis yang bergerak di bidang instalasi aluminium dan kaca di Duren Sawit, Jakarta Timur.
 
 ### Masalah
 Proses pembuatan invoice sebelumnya dilakukan secara **manual** — salin-tempel (_copy-paste_) data klien ke dalam template dokumen. Proses ini tidak efisien, memakan waktu, dan rentan terhadap **kesalahan pengetikan** (_human error_).
