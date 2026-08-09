@@ -43,7 +43,7 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
                 <h1
                   className="text-[19px] font-extrabold text-[#0f172a] tracking-wide leading-none mb-1"
                 >
-                  AGUNGJAYA_ALUMUNIUM
+                  AGUNGJAYA ALUMINIUM
                 </h1>
                 <p className="text-[11px] text-gray-500 uppercase tracking-widest mt-0.5">
                   Aluminium dan Kaca
@@ -71,7 +71,7 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
           <div className="flex justify-between items-start">
             {/* Invoice To */}
             <div>
-              <p className="text-[16px] font-bold text-[#0f172a] mb-1.5">Invoice to:</p>
+              <p className="text-[12px] font-bold text-amber-600 uppercase tracking-widest mb-1">Invoice To</p>
               <p className="text-[20px] font-extrabold text-[#0f172a]">
                 {data.clientName || "\u00A0"}
               </p>
@@ -82,18 +82,17 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
 
             {/* From */}
             <div className="text-right">
-              <p className="text-[16px] font-bold text-[#0f172a] mb-1.5">From:</p>
+              <p className="text-[12px] font-bold text-amber-600 uppercase tracking-widest mb-1">From</p>
               <p className="text-[20px] font-extrabold text-[#0f172a]">
-                AGUNGJAYA_ALUMINUM
+                AGUNGJAYA ALUMINIUM
               </p>
               <p className="text-[16px] font-semibold text-[#0f172a] mt-1">
-                Duren Sawit , Jakarta Timur
+                Duren Sawit, Jakarta Timur
               </p>
             </div>
           </div>
         </div>
 
-        {/* ===== TABLE SECTION ===== */}
         {/* ===== TABLE SECTION ===== */}
         <div className="px-12 mt-6">
           {/* Table Header */}
@@ -124,7 +123,10 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
                 className="invoice-row flex items-start min-h-[70px]"
                 style={{ borderBottom: "1px solid #E5E7EB" }}
               >
-                <div className="flex-1 py-5 px-2">
+                <div className="flex-1 py-5 px-2 flex items-start gap-3">
+                  <span className="text-[14px] font-bold text-amber-600 mt-0.5 shrink-0">
+                    {index + 1}.
+                  </span>
                   <p className="text-[16px] text-gray-800 whitespace-pre-line leading-[1.8]">
                     {item.description || "\u00A0"}
                   </p>
@@ -150,6 +152,23 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
                 </p>
               </div>
             </div>
+
+            {/* Pelunasan Row — hanya muncul saat LUNAS dan ada nilai pelunasan */}
+            {data.status === "LUNAS" && data.pelunasan && (
+              <div
+                className="invoice-row flex items-center min-h-[60px]"
+                style={{ borderTop: "1px solid #E5E7EB" }}
+              >
+                <div className="flex-1 py-5 px-2">
+                  <p className="text-[16px] text-gray-800 font-semibold tracking-wide">Pelunasan</p>
+                </div>
+                <div className="w-[200px] py-5 px-2 text-right">
+                  <p className="text-[16px] text-gray-800 font-medium">
+                    {data.pelunasan}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Bottom border line for table area before Sisa Pembayaran */}
@@ -157,14 +176,17 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
 
           {/* Sisa Pembayaran / Total */}
           <div className="flex items-center justify-end mt-8 mb-4 gap-6">
-            <span className="text-[16px] font-semibold text-gray-700">
+            <span className="text-[16px] font-bold text-gray-800">
               {data.status === "LUNAS" ? "Total" : "Sisa Pembayaran"}
             </span>
             <div
-              className="px-8 py-3 rounded-sm"
-              style={{ backgroundColor: "#FEF3C7" }}
+              className={`px-8 py-3 rounded-lg border shadow-xs ${
+                data.status === "LUNAS"
+                  ? "bg-emerald-100 border-emerald-300 text-emerald-950"
+                  : "bg-amber-100 border-amber-300 text-amber-950"
+              }`}
             >
-              <span className="text-[22px] font-black text-gray-900 tracking-wide">
+              <span className="text-[22px] font-black tracking-wide">
                 {data.sisaPembayaran || "Rp ___________"}
               </span>
             </div>
@@ -179,26 +201,28 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
         {/* ===== PAYMENT METHOD SECTION ===== */}
         <div className="invoice-payment px-12 pb-6">
           <div className="flex justify-between items-end">
-            {/* Left: Payment Info */}
+            {/* Left: Payment Info - Clean Typographic Spacing */}
             <div>
-              <h3
-                className="text-[18px] font-extrabold text-gray-900 uppercase tracking-wider mb-3"
-              >
+              <p className="text-[12px] font-bold text-amber-600 uppercase tracking-widest mb-3">
                 Payment Method
-              </h3>
-              <p className="text-[18px] font-bold text-[#0f172a]">
-                {data.paymentClientName || "\u00A0"}
               </p>
-              <p className="text-[16px] text-gray-500 mt-1">
-                {data.paymentMethod || "\u00A0"}
-              </p>
-              <p
-                className="text-[17px] font-bold mt-1.5 tracking-wide"
-                style={{ color: "#E8A317" }}
-              >
-                {data.paymentDate || "\u00A0"}
-              </p>
-              <p className="text-[19px] font-extrabold text-[#0f172a] mt-6">
+              
+              <div className="space-y-1">
+                <p className="text-[18px] font-extrabold text-[#0f172a] leading-tight">
+                  {data.paymentClientName || "\u00A0"}
+                </p>
+                <p className="text-[15px] font-medium text-gray-500">
+                  {data.paymentMethod || "\u00A0"}
+                </p>
+                {data.paymentDate && (
+                  <p className="text-[15px] font-bold text-amber-600 mt-2 flex items-center gap-2">
+                    <span className="inline-block w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                    {data.paymentDate}
+                  </p>
+                )}
+              </div>
+
+              <p className="text-[15px] font-bold italic text-gray-400 mt-5">
                 Thank you for your business :)
               </p>
             </div>
@@ -211,10 +235,13 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
                 className="w-[90px] h-[90px] object-contain"
               />
               <div
-                className="px-10 py-2 text-center"
-                style={{ border: "2px solid #9CA3AF" }}
+                className={`px-8 py-2 text-center rounded-md border-2 ${
+                  data.status === "LUNAS"
+                    ? "bg-emerald-50 border-emerald-600 text-emerald-800"
+                    : "bg-amber-50 border-amber-500 text-amber-800"
+                }`}
               >
-                <span className="text-[14px] font-bold text-gray-700 tracking-wide">
+                <span className="text-[14px] font-extrabold tracking-widest uppercase">
                   {data.status || "DP"}
                 </span>
               </div>
