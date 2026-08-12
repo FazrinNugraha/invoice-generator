@@ -10,6 +10,8 @@ const DEFAULT_DATA: InvoiceData = {
   clientName: "",
   clientAddress: "",
   items: [{ description: "", total: "" }],
+  subTotal: "",
+  discount: "",
   dp: "",
   pelunasan: "",
   sisaPembayaran: "",

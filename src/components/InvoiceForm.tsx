@@ -12,6 +12,8 @@ export interface InvoiceData {
   clientName: string;
   clientAddress: string;
   items: InvoiceItem[];
+  subTotal?: string;
+  discount?: string;
   dp: string;
   pelunasan: string;
   sisaPembayaran: string;
@@ -44,29 +46,73 @@ export default function InvoiceForm({
 }: InvoiceFormProps) {
   const [showDrafts, setShowDrafts] = useState(false);
 
-  const updateField = (field: keyof InvoiceData, value: string) => {
-    onChange({ ...data, [field]: value });
+  const parseCurrency = (val?: string): number => {
+    if (!val) return 0;
+    const cleaned = val.replace(/[^0-9]/g, "");
+    return cleaned ? parseInt(cleaned, 10) : 0;
   };
 
-  const updateItem = (index: number, field: keyof InvoiceItem, value: string) => {
-    const newItems = [...data.items];
-    newItems[index] = { ...newItems[index], [field]: value };
-    onChange({ ...data, items: newItems });
+  const formatCurrencyValue = (num: number): string => {
+    if (num <= 0) return "";
+    return "Rp " + num.toLocaleString("id-ID");
   };
 
-  const addItem = () => {
-    onChange({ ...data, items: [...data.items, { description: "", total: "" }] });
+  const recalculate = (updatedData: InvoiceData, triggeredByField?: keyof InvoiceData) => {
+    // 1. Calculate Subtotal from items
+    const subTotalNum = updatedData.items.reduce(
+      (sum, item) => sum + parseCurrency(item.total),
+      0
+    );
+    const subTotalStr =
+      triggeredByField === "subTotal"
+        ? updatedData.subTotal || ""
+        : subTotalNum > 0
+        ? formatCurrencyValue(subTotalNum)
+        : "";
+
+    // 2. Parse Discount & DP
+    const discountNum = parseCurrency(updatedData.discount);
+    const dpNum = parseCurrency(updatedData.dp);
+    const effectiveSubTotal = parseCurrency(subTotalStr) || subTotalNum;
+    const netTotal = Math.max(0, effectiveSubTotal - discountNum);
+
+    // 3. Calculate Pelunasan & Sisa Pembayaran
+    let pelunasanStr = updatedData.pelunasan;
+    let sisaStr = updatedData.sisaPembayaran;
+
+    if (triggeredByField !== "pelunasan") {
+      if (updatedData.status === "LUNAS" && dpNum > 0) {
+        const calculatedPelunasan = Math.max(0, netTotal - dpNum);
+        pelunasanStr = calculatedPelunasan > 0 ? formatCurrencyValue(calculatedPelunasan) : "";
+      } else {
+        pelunasanStr = "";
+      }
+    }
+
+    if (triggeredByField !== "sisaPembayaran") {
+      if (updatedData.status === "DP") {
+        const calculatedSisa = Math.max(0, netTotal - dpNum);
+        sisaStr = calculatedSisa > 0 ? formatCurrencyValue(calculatedSisa) : "";
+      } else {
+        // Status LUNAS -> Total Tagihan Netto
+        sisaStr = netTotal > 0 ? formatCurrencyValue(netTotal) : "";
+      }
+    }
+
+    return {
+      ...updatedData,
+      subTotal: subTotalStr,
+      pelunasan: pelunasanStr,
+      sisaPembayaran: sisaStr,
+    };
   };
 
   // ===== Currency Input Helpers =====
   const CURRENCY_PREFIX = "Rp ";
 
   const handleCurrencyChange = (raw: string): string => {
-    // Jika user menghapus semua hingga kosong atau hanya prefix
     if (!raw || raw === CURRENCY_PREFIX) return "";
-    // Jika sudah ada prefix, biarkan; jika tidak ada, tambahkan
     if (raw.startsWith(CURRENCY_PREFIX)) return raw;
-    // Cegah user menghapus 'R' atau 'Rp' lalu mengetik ulang tanpa prefix
     return CURRENCY_PREFIX + raw;
   };
 
@@ -92,10 +138,28 @@ export default function InvoiceForm({
     if (value === CURRENCY_PREFIX) updateItem(index, "total", "");
   };
 
+  const updateField = (field: keyof InvoiceData, value: string) => {
+    const newData = { ...data, [field]: value };
+    onChange(recalculate(newData, field));
+  };
+
+  const updateItem = (index: number, field: keyof InvoiceItem, value: string) => {
+    const newItems = [...data.items];
+    newItems[index] = { ...newItems[index], [field]: value };
+    const newData = { ...data, items: newItems };
+    onChange(recalculate(newData));
+  };
+
+  const addItem = () => {
+    const newData = { ...data, items: [...data.items, { description: "", total: "" }] };
+    onChange(recalculate(newData));
+  };
+
   const removeItem = (index: number) => {
     if (data.items.length <= 1) return;
     const newItems = data.items.filter((_, i) => i !== index);
-    onChange({ ...data, items: newItems });
+    const newData = { ...data, items: newItems };
+    onChange(recalculate(newData));
   };
 
   const handlePrint = () => {
@@ -264,12 +328,38 @@ export default function InvoiceForm({
             </div>
           </section>
 
-          {/* Section: DP & Sisa */}
+          {/* Section: Ringkasan Biaya */}
           <section>
             <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-              DP{data.status === "LUNAS" ? " & Pelunasan" : " & Sisa Pembayaran"}
+              Ringkasan Biaya
             </h2>
             <div className="space-y-2.5">
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Subtotal (Total Item)</label>
+                <input
+                  type="text"
+                  value={data.subTotal || ""}
+                  onChange={(e) => updateField("subTotal", handleCurrencyChange(e.target.value))}
+                  onFocus={() => handleCurrencyFocus("subTotal", data.subTotal || "")}
+                  onBlur={() => handleCurrencyBlur("subTotal", data.subTotal || "")}
+                  placeholder="15.650.000"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-shadow"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Discount (Opsional)</label>
+                <input
+                  type="text"
+                  value={data.discount || ""}
+                  onChange={(e) => updateField("discount", handleCurrencyChange(e.target.value))}
+                  onFocus={() => handleCurrencyFocus("discount", data.discount || "")}
+                  onBlur={() => handleCurrencyBlur("discount", data.discount || "")}
+                  placeholder="650.000"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-shadow"
+                />
+              </div>
+
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">DP (Uang Muka)</label>
                 <input

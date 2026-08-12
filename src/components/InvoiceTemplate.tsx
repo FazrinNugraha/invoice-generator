@@ -1,4 +1,4 @@
-import { Phone, MapPin } from "lucide-react";
+import { Phone, MapPin, Receipt, Tag, Wallet, CheckCircle, CreditCard } from "lucide-react";
 import type { InvoiceData } from "./InvoiceForm";
 
 interface InvoiceTemplateProps {
@@ -6,6 +6,12 @@ interface InvoiceTemplateProps {
 }
 
 export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
+  const hasDp = Boolean(
+    data.dp &&
+    data.dp.replace(/[^0-9]/g, "") !== "" &&
+    parseInt(data.dp.replace(/[^0-9]/g, ""), 10) > 0
+  );
+
   return (
     <div
       id="invoice-template"
@@ -138,57 +144,72 @@ export default function InvoiceTemplate({ data }: InvoiceTemplateProps) {
                 </div>
               </div>
             ))}
-
-            {/* DP Row */}
-            <div
-              className="invoice-row flex items-center min-h-[60px]"
-            >
-              <div className="flex-1 py-5 px-2">
-                <p className="text-[16px] text-gray-800 font-semibold tracking-wide">DP</p>
-              </div>
-              <div className="w-[200px] py-5 px-2 text-right">
-                <p className="text-[16px] text-gray-800 font-medium">
-                  {data.dp || "\u00A0"}
-                </p>
-              </div>
-            </div>
-
-            {/* Pelunasan Row — hanya muncul saat LUNAS dan ada nilai pelunasan */}
-            {data.status === "LUNAS" && data.pelunasan && (
-              <div
-                className="invoice-row flex items-center min-h-[60px]"
-                style={{ borderTop: "1px solid #E5E7EB" }}
-              >
-                <div className="flex-1 py-5 px-2">
-                  <p className="text-[16px] text-gray-800 font-semibold tracking-wide">Pelunasan</p>
-                </div>
-                <div className="w-[200px] py-5 px-2 text-right">
-                  <p className="text-[16px] text-gray-800 font-medium">
-                    {data.pelunasan}
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* Bottom border line for table area before Sisa Pembayaran */}
-          <div className="mt-2" style={{ borderBottom: "1px solid #D1D5DB" }} />
+          {/* Summary and Sisa Pembayaran */}
+          <div className="mt-4 flex flex-col items-end">
+            <div className="w-[350px]">
+              {/* Top Border */}
+              <div className="border-t-[1.5px] border-gray-300 w-full mb-1" />
+              
+              {data.subTotal && (
+                <div className="flex items-center justify-between py-2 px-2">
+                  <div className="flex items-center gap-2">
+                    <Receipt size={15} className="text-gray-500" />
+                    <p className="text-[16px] text-gray-800 font-medium">Subtotal</p>
+                  </div>
+                  <p className="text-[16px] text-gray-800 font-medium">{data.subTotal}</p>
+                </div>
+              )}
+              
+              {data.discount && (
+                <div className="flex items-center justify-between py-2 px-2">
+                  <div className="flex items-center gap-2">
+                    <Tag size={15} className="text-red-500" />
+                    <p className="text-[16px] text-gray-800 font-medium">Discount</p>
+                  </div>
+                  <p className="text-[16px] text-red-600 font-medium">{data.discount}</p>
+                </div>
+              )}
+              
+              {hasDp && (
+                <div className="flex items-center justify-between py-2 px-2">
+                  <div className="flex items-center gap-2">
+                    <Wallet size={15} className="text-amber-600" />
+                    <p className="text-[16px] text-gray-800 font-medium">DP</p>
+                  </div>
+                  <p className="text-[16px] text-gray-800 font-medium">{data.dp}</p>
+                </div>
+              )}
+              
+              {data.status === "LUNAS" && data.pelunasan && (
+                <div className="flex items-center justify-between py-2 px-2">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle size={15} className="text-emerald-600" />
+                    <p className="text-[16px] text-gray-800 font-medium">Pelunasan</p>
+                  </div>
+                  <p className="text-[16px] text-gray-800 font-medium">{data.pelunasan}</p>
+                </div>
+              )}
+              
+              {/* Border above Total */}
+              <div className="border-t-[2px] border-[#1e3a8a] w-full mt-1.5" />
+              
+              {/* Total / Sisa Pembayaran */}
+              <div className="flex items-center justify-between py-2.5 px-3 bg-[#f0f7ff]">
+                <div className="flex items-center gap-2">
+                  <CreditCard size={16} className="text-[#1e3a8a]" />
+                  <p className="text-[16px] text-[#1e3a8a] font-bold">
+                    {data.status === "LUNAS" ? "Total" : "Sisa Pembayaran"}
+                  </p>
+                </div>
+                <p className="text-[18px] text-[#1e3a8a] font-extrabold tracking-wide">
+                  {data.sisaPembayaran || "Rp 0"}
+                </p>
+              </div>
 
-          {/* Sisa Pembayaran / Total */}
-          <div className="flex items-center justify-end mt-8 mb-4 gap-6">
-            <span className="text-[16px] font-bold text-gray-800">
-              {data.status === "LUNAS" ? "Total" : "Sisa Pembayaran"}
-            </span>
-            <div
-              className={`px-8 py-3 rounded-lg border shadow-xs ${
-                data.status === "LUNAS"
-                  ? "bg-emerald-100 border-emerald-300 text-emerald-950"
-                  : "bg-amber-100 border-amber-300 text-amber-950"
-              }`}
-            >
-              <span className="text-[22px] font-black tracking-wide">
-                {data.sisaPembayaran || "Rp ___________"}
-              </span>
+              {/* Border below Total */}
+              <div className="border-b-[2px] border-[#1e3a8a] w-full mb-1" />
             </div>
           </div>
         </div>
